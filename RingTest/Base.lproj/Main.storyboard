@@ -110,10 +110,58 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="xAo-8T-9VD"/>
+                    <connections>
+                        <segue destination="JBW-7n-eMT" kind="show" identifier="segueToFullSizeImage" id="dqu-hO-DBG"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1sZ-D7-sfh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1820" y="35.532233883058474"/>
+        </scene>
+        <!--Full Size ImageVC-->
+        <scene sceneID="EKn-p7-DSv">
+            <objects>
+                <viewController id="JBW-7n-eMT" customClass="FullSizeImageVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="kwf-PC-I0J"/>
+                        <viewControllerLayoutGuide type="bottom" id="yaD-qk-YTO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="F4T-gg-wcW">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="q7i-AU-euU">
+                                <rect key="frame" x="37" y="233" width="300" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="3pl-ay-BpD"/>
+                                    <constraint firstAttribute="height" constant="200" id="Fcj-3N-ABx"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fxm-Ta-kFZ">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="fxm-Ta-kFZ" secondAttribute="trailing" id="0jX-CH-hrB"/>
+                            <constraint firstItem="fxm-Ta-kFZ" firstAttribute="leading" secondItem="F4T-gg-wcW" secondAttribute="leading" id="AvJ-A2-j33"/>
+                            <constraint firstItem="yaD-qk-YTO" firstAttribute="top" secondItem="fxm-Ta-kFZ" secondAttribute="bottom" id="ETO-Af-fL5"/>
+                            <constraint firstItem="fxm-Ta-kFZ" firstAttribute="top" secondItem="kwf-PC-I0J" secondAttribute="bottom" id="cEx-cv-RdE"/>
+                            <constraint firstItem="q7i-AU-euU" firstAttribute="centerY" secondItem="F4T-gg-wcW" secondAttribute="centerY" id="kjr-FN-3jW"/>
+                            <constraint firstItem="q7i-AU-euU" firstAttribute="centerX" secondItem="F4T-gg-wcW" secondAttribute="centerX" id="rHQ-7l-Xhv"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="errorMessage" destination="q7i-AU-euU" id="zHY-le-eBr"/>
+                        <outlet property="fullSizeImage" destination="fxm-Ta-kFZ" id="bGw-Ty-M1R"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="V9W-Qs-tWi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2716" y="36.431784107946029"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9iW-cr-kJY">

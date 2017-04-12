@@ -8,21 +8,6 @@
 
 import UIKit
 
-class TopTabHomeCell: UITableViewCell {
-    
-    @IBOutlet var authorsThumbnail: UIButton!
-    @IBOutlet var postTitle: UILabel!
-    @IBOutlet var authorsScreenName: UILabel!
-    @IBOutlet var entryDate: UILabel!
-    @IBOutlet var commentQty: UILabel!
-    
-    @IBAction func thumbnailClicked(_ sender: Any) {
-        print("Thumbnail clicked!");
-        
-    }
-    
-}
-
 
 class RedditHomeVC: UITableViewController {
     
@@ -30,7 +15,7 @@ class RedditHomeVC: UITableViewController {
     
     let urlHomeTop = "https://api.reddit.com/top?limit=50"
     var postArr : [Dictionary<String, String>] = []
-    
+    var fullSizeImgForSelectedCell : String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,8 +25,6 @@ class RedditHomeVC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        
         
         self.getRedditData()
     }
@@ -63,14 +46,17 @@ class RedditHomeVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath) as? TopTabHomeCell else{
-            fatalError("The dequeued cell is not an instance of TopTabHomeCell")
+            fatalError("Unable to instantiate TopTabHomeCell")
         }
+        
+        cell.redditHomeDelegate = self
         
         let cellData : Dictionary<String, String> = self.postArr[indexPath.row]
         cell.postTitle.text = cellData["title"]
         cell.authorsScreenName.text = cellData["author"]
         cell.entryDate.text = cellData["entryDate"]
         cell.commentQty.text = cellData["comments"]
+        cell.fullSizeImageURL = cellData["fullsizeImageURL"]!
         
         do {
             let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
@@ -85,7 +71,22 @@ class RedditHomeVC: UITableViewController {
         return cell
     }
 
+    // MARK: - Navigation
+    
+    func segueToFullSizeImageScreen(imgURL : String) {
+        self.fullSizeImgForSelectedCell = imgURL
+        self.performSegue(withIdentifier: "segueToFullSizeImage", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let destinationVC = segue.destination as? FullSizeImageVC else {
+            fatalError("Unable to instantiate FullSizeImageVC")
+        }
+    
+        destinationVC.fullSizeImageURL = self.fullSizeImgForSelectedCell
+    }
 
+    
     // MARK: - Reddit API Calls
     
     func getRedditData() {
@@ -106,11 +107,6 @@ class RedditHomeVC: UITableViewController {
         }
         
         task.resume()
-        
-        let date = NSDate(timeIntervalSince1970: 1491838131)
-        let elapsed = NSDate().timeIntervalSince(date as Date)
-        print("elapsed (hours ago): ", Int(elapsed / 3600))
-        
     }
     
     func fetchFullSizeImageURL(data : NSDictionary) -> String{
@@ -160,14 +156,11 @@ class RedditHomeVC: UITableViewController {
             postDict["fullsizeImageURL"] = fullsizeImageURL
 
             self.postArr.append(postDict)
-            
-            print("")
         }
         
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
-        print("")
     }
 
     /*
@@ -202,16 +195,6 @@ class RedditHomeVC: UITableViewController {
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the item to be re-orderable.
         return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
     }
     */
 
