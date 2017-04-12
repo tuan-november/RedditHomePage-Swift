@@ -10,6 +10,8 @@ import UIKit
 
 class RedditHomeVC: UITableViewController {
     
+    // MARK: - Properties
+    
     let urlHomeTop = "https://api.reddit.com/top?limit=50"
     var postArr : [Dictionary<String, String>] = []
     
@@ -42,6 +44,16 @@ class RedditHomeVC: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.postArr.count
     }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath)
+        
+        let cellData : Dictionary<String, String> = self.postArr[indexPath.row]
+        cell.textLabel?.text = cellData["title"]
+        
+        return cell
+    }
+
 
     // MARK: - Reddit API Calls
     
@@ -120,20 +132,12 @@ class RedditHomeVC: UITableViewController {
             
             print("")
         }
-        self.tableView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
         print("")
     }
-    
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath)
-        
-        let cellData : Dictionary<String, String> = self.postArr[indexPath.row]
-        cell.textLabel?.text = cellData["title"]
-        
-        return cell
-    }
-    
 
     /*
     // Override to support conditional editing of the table view.
