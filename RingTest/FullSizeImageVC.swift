@@ -57,9 +57,14 @@ class FullSizeImageVC: UIViewController {
     
     func loadImage(){
         do {
-            let image =  try UIImage(data: Data(contentsOf: URL(string: self.fullSizeImageURL)!))
-            DispatchQueue.main.async {
-                self.fullSizeImage.image = image
+            if let url = URL(string: self.fullSizeImageURL){
+                let image =  try UIImage(data: Data(contentsOf: url))
+                DispatchQueue.main.async {
+                    self.fullSizeImage.image = image
+                }
+            }
+            else{
+                self.errorMessage.text = "ERROR: url == nil"
             }
         }
         catch{

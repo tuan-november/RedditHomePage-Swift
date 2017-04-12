@@ -26,6 +26,7 @@ class RedditHomeVC: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
+        self.setupNavigationBar()
         self.getRedditData()
     }
 
@@ -69,6 +70,16 @@ class RedditHomeVC: UITableViewController {
         }
         
         return cell
+    }
+    
+    func setupNavigationBar(){
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Refresh", style: UIBarButtonItemStyle.plain, target: self, action: #selector(refreshTable(sender:)))
+    }
+    
+    func refreshTable(sender: UIBarButtonItem){
+        print("Refreshing table...")
+        
+        self.tableView.reloadData()
     }
 
     // MARK: - Navigation
@@ -163,6 +174,26 @@ class RedditHomeVC: UITableViewController {
         }
     }
 
+    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        
+        //Bottom Refresh
+        
+        if scrollView == tableView{
+            
+            if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height)
+            {
+//                if !isNewDataLoading{
+//                    
+//                    if helperInstance.isConnectedToNetwork(){
+//                        
+//                        isNewDataLoading = true
+//                        getNewData()
+//                    }
+//                }
+            }
+        }
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
