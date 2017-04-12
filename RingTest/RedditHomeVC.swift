@@ -8,6 +8,16 @@
 
 import UIKit
 
+class TopTabHomeCell: UITableViewCell {
+    
+    @IBOutlet var authorsThumbnail: UIImageView!
+    @IBOutlet var postTitle: UILabel!
+    @IBOutlet var authorsScreenName: UILabel!
+    @IBOutlet var entryDate: UILabel!
+    @IBOutlet var commentQty: UILabel!
+}
+
+
 class RedditHomeVC: UITableViewController {
     
     // MARK: - Properties
@@ -46,10 +56,25 @@ class RedditHomeVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath) as? TopTabHomeCell else{
+            fatalError("The dequeued cell is not an instance of TopTabHomeCell")
+        }
         
         let cellData : Dictionary<String, String> = self.postArr[indexPath.row]
-        cell.textLabel?.text = cellData["title"]
+        cell.postTitle.text = cellData["title"]
+        cell.authorsScreenName.text = cellData["author"]
+        cell.entryDate.text = cellData["entryDate"]
+        cell.commentQty.text = cellData["comments"]
+        
+        do {
+            let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
+            DispatchQueue.main.async {
+                cell.authorsThumbnail.image = thumbnailImage
+            }
+        }
+        catch{
+            print(error)
+        }
         
         return cell
     }
@@ -122,9 +147,9 @@ class RedditHomeVC: UITableViewController {
             let fullsizeImageURL = self.fetchFullSizeImageURL(data: data)
             
             postDict["title"] = title
-            postDict["author"] = author
-            postDict["comments"] = comments.stringValue
-            postDict["entryDate"] = String(elapsedHours) + " hours ago"
+            postDict["author"] = "by " + author
+            postDict["comments"] = comments.stringValue + " comments"
+            postDict["entryDate"] = "submitted " + String(elapsedHours) + " hours ago"
             postDict["thumbnailImageURL"] = thumbnailImageURL
             postDict["fullsizeImageURL"] = fullsizeImageURL
 

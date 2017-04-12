@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,18 +14,83 @@
         <scene sceneID="h6f-mv-gWj">
             <objects>
                 <tableViewController id="5nI-NC-vhb" customClass="RedditHomeVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="XOA-2g-hcW">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="107" sectionHeaderHeight="28" sectionFooterHeight="28" id="XOA-2g-hcW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="topPostCell" id="T9r-DI-geZ">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="topPostCell" rowHeight="107" id="T9r-DI-geZ" customClass="TopTabHomeCell" customModule="RingTest" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="107"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="T9r-DI-geZ" id="S1E-ih-xUk">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="107"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reddit-logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="Abp-fb-pqt">
+                                            <rect key="frame" x="8" y="8" width="92" height="90"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="90" id="5h7-Tx-ott"/>
+                                                <constraint firstAttribute="width" constant="92" id="bfk-1Z-ZZi"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 comments" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="pah-4G-Qz4">
+                                            <rect key="frame" x="108" y="77" width="112" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="GFj-42-YPe"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="15"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="by Author" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="VzM-Zb-HvQ">
+                                            <rect key="frame" x="300" y="48" width="67" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="l7h-0Z-4Kv"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <color key="textColor" red="0.084758803036253938" green="0.21853661573072414" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="submitted 6 hours ago" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="qTq-au-teL">
+                                            <rect key="frame" x="108" y="48" width="137" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="Jet-oA-4Bt"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Post Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.25" translatesAutoresizingMaskIntoConstraints="NO" id="Oyg-J8-tMc">
+                                            <rect key="frame" x="108" y="8" width="259" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="hf0-jf-1Lm"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                            <color key="textColor" red="0.10982495614696774" green="0.080784075272295142" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="pah-4G-Qz4" firstAttribute="top" secondItem="qTq-au-teL" secondAttribute="bottom" constant="8" id="3xv-oH-Dwe"/>
+                                        <constraint firstItem="Abp-fb-pqt" firstAttribute="top" secondItem="S1E-ih-xUk" secondAttribute="topMargin" id="61P-RF-Ogt"/>
+                                        <constraint firstItem="Abp-fb-pqt" firstAttribute="leading" secondItem="S1E-ih-xUk" secondAttribute="leadingMargin" id="D0S-32-eq1"/>
+                                        <constraint firstItem="Oyg-J8-tMc" firstAttribute="top" secondItem="S1E-ih-xUk" secondAttribute="topMargin" id="FCN-LN-Pb2"/>
+                                        <constraint firstItem="qTq-au-teL" firstAttribute="top" secondItem="Oyg-J8-tMc" secondAttribute="bottom" id="OjP-54-vwt"/>
+                                        <constraint firstItem="VzM-Zb-HvQ" firstAttribute="trailing" secondItem="S1E-ih-xUk" secondAttribute="trailingMargin" id="US3-kz-RKe"/>
+                                        <constraint firstItem="pah-4G-Qz4" firstAttribute="leading" secondItem="Abp-fb-pqt" secondAttribute="trailing" constant="8" id="Udx-U5-ATX"/>
+                                        <constraint firstItem="VzM-Zb-HvQ" firstAttribute="top" secondItem="Oyg-J8-tMc" secondAttribute="bottom" id="eDp-xK-RcB"/>
+                                        <constraint firstItem="Oyg-J8-tMc" firstAttribute="trailing" secondItem="S1E-ih-xUk" secondAttribute="trailingMargin" id="fXx-Q3-ZN4"/>
+                                        <constraint firstItem="Oyg-J8-tMc" firstAttribute="leading" secondItem="Abp-fb-pqt" secondAttribute="trailing" constant="8" id="kQZ-nP-4me"/>
+                                        <constraint firstItem="qTq-au-teL" firstAttribute="leading" secondItem="Abp-fb-pqt" secondAttribute="trailing" constant="8" id="mYt-YD-xWh"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="authorsScreenName" destination="VzM-Zb-HvQ" id="AJq-q8-ZAH"/>
+                                    <outlet property="authorsThumbnail" destination="Abp-fb-pqt" id="zlW-31-f76"/>
+                                    <outlet property="commentQty" destination="pah-4G-Qz4" id="J6U-Ab-CVa"/>
+                                    <outlet property="entryDate" destination="qTq-au-teL" id="mbS-N4-BFH"/>
+                                    <outlet property="postTitle" destination="Oyg-J8-tMc" id="rYc-OZ-B99"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -35,7 +101,10 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1sZ-D7-sfh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="881" y="36"/>
+            <point key="canvasLocation" x="880.79999999999995" y="35.532233883058474"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="reddit-logo.png" width="256" height="256"/>
+    </resources>
 </document>
