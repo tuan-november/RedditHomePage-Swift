@@ -16,7 +16,7 @@ class RedditHomeVC: UITableViewController {
     let urlHomeTop = "https://api.reddit.com/top?limit=50"
     var postArr : [Dictionary<String, String>] = []
     var fullSizeImgForSelectedCell : String = ""
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -59,18 +59,47 @@ class RedditHomeVC: UITableViewController {
         cell.commentQty.text = cellData["comments"]
         cell.fullSizeImageURL = cellData["fullsizeImageURL"]!
         
-        do {
-            let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
-            DispatchQueue.main.async {
-                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+        // Preload pictures of first 5 cells only, for pagination purpose
+        if(self.tableView.indexPathsForVisibleRows?.contains(indexPath))! && indexPath.row < 5 {
+            do {
+                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
+                DispatchQueue.main.async {
+                    cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+                }
             }
-        }
-        catch{
-            print(error)
+            catch {
+                print(error)
+            }
         }
         
         return cell
     }
+    
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        
+        let visibleIndexArray = self.tableView.indexPathsForVisibleRows!
+        
+        for idx in visibleIndexArray {
+            let cellData : Dictionary<String, String> = self.postArr[idx.row]
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: idx) as? TopTabHomeCell else{
+                fatalError("Unable to instantiate TopTabHomeCell")
+            }
+            
+            do {
+                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
+                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+            }
+            catch{
+                print(error)
+            }
+            
+        }
+        DispatchQueue.main.async {
+            self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: UITableViewRowAnimation.none)
+        }
+    }
+    
+    // MARK: - Navigation Bar
     
     func setupNavigationBar(){
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Refresh", style: UIBarButtonItemStyle.plain, target: self, action: #selector(refreshTable(sender:)))
@@ -79,7 +108,7 @@ class RedditHomeVC: UITableViewController {
     func refreshTable(sender: UIBarButtonItem){
         print("Refreshing table...")
         
-        self.tableView.reloadData()
+        self.getRedditData()
     }
 
     // MARK: - Navigation
@@ -171,26 +200,6 @@ class RedditHomeVC: UITableViewController {
         
         DispatchQueue.main.async {
             self.tableView.reloadData()
-        }
-    }
-
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        
-        //Bottom Refresh
-        
-        if scrollView == tableView{
-            
-            if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height)
-            {
-//                if !isNewDataLoading{
-//                    
-//                    if helperInstance.isConnectedToNetwork(){
-//                        
-//                        isNewDataLoading = true
-//                        getNewData()
-//                    }
-//                }
-            }
         }
     }
     
