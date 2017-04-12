@@ -149,7 +149,7 @@ class RedditHomeVC: UITableViewController {
             postDict["title"] = title
             postDict["author"] = "by " + author
             postDict["comments"] = comments.stringValue + " comments"
-            postDict["entryDate"] = "submitted " + String(elapsedHours) + " hours ago"
+            postDict["entryDate"] = String(elapsedHours) + " hours ago"
             postDict["thumbnailImageURL"] = thumbnailImageURL
             postDict["fullsizeImageURL"] = fullsizeImageURL
 
