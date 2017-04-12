@@ -18,12 +18,41 @@ class FullSizeImageVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.setupNavigationBar()
         self.loadImage()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+    
+    func setupNavigationBar(){
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save Image", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveImage(sender:)))
+    }
+    
+    func saveImage(sender: UIBarButtonItem){
+        print("Saving image...")
+        
+        do {
+            let image =  try UIImage(data: Data(contentsOf: URL(string: self.fullSizeImageURL)!))
+            UIImageWriteToSavedPhotosAlbum(image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+        catch{
+            print(error)
+            self.displayAlertMessage(title: "ERROR!", message: error.localizedDescription)
+        }
+        
+    }
+    
+    func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        if (error == nil) {
+            self.displayAlertMessage(title: "Success!", message: "Image successfully saved to your photo album")
+            print("... image successfully saved")
+        } else {
+            self.displayAlertMessage(title: "ERROR!", message: (error?.localizedDescription)!)
+            print("... image failed to save: ", (error?.localizedDescription)!)
+        }
     }
     
     func loadImage(){
@@ -37,6 +66,12 @@ class FullSizeImageVC: UIViewController {
             print(error)
             self.errorMessage.text = "ERROR: " + error.localizedDescription
         }
+    }
+    
+    func displayAlertMessage(title: String, message: String){
+        let popupDialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        popupDialog.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(popupDialog, animated: true, completion: nil)
     }
 
     /*
