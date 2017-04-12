@@ -10,11 +10,17 @@ import UIKit
 
 class TopTabHomeCell: UITableViewCell {
     
-    @IBOutlet var authorsThumbnail: UIImageView!
+    @IBOutlet var authorsThumbnail: UIButton!
     @IBOutlet var postTitle: UILabel!
     @IBOutlet var authorsScreenName: UILabel!
     @IBOutlet var entryDate: UILabel!
     @IBOutlet var commentQty: UILabel!
+    
+    @IBAction func thumbnailClicked(_ sender: Any) {
+        print("Thumbnail clicked!");
+        
+    }
+    
 }
 
 
@@ -69,7 +75,7 @@ class RedditHomeVC: UITableViewController {
         do {
             let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
             DispatchQueue.main.async {
-                cell.authorsThumbnail.image = thumbnailImage
+                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
             }
         }
         catch{
