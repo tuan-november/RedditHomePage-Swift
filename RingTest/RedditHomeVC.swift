@@ -16,8 +16,6 @@ class RedditHomeVC: UITableViewController {
     var postArr : [Dictionary<String, String>] = []
     var fullSizeImgForSelectedCell : String = ""
     var shouldRestoreToPrevousState : Bool = false
-    var isViewFirstLoaded : Bool = false
-    var preloadedCellIndices : [IndexPath] = [IndexPath()]
     var lastTopVisibleIndexpath : IndexPath = IndexPath()
     
     override func viewDidLoad() {
@@ -62,13 +60,7 @@ class RedditHomeVC: UITableViewController {
         cell.commentQty.text = cellData[PostDictKey.COMMENT_QTY]
         cell.fullSizeImageURL = cellData[PostDictKey.FULLSIZE_IMG_URL]!
         
-        if(self.isViewFirstLoaded){
-            self.isViewFirstLoaded = false
-            self.preloadedCellIndices = self.tableView.indexPathsForVisibleRows!
-        }
-        
         if !cell.isImageLoaded {
-            self.isViewFirstLoaded = false
             do {
                 guard let urlString : String = cellData[PostDictKey.THUMBNAIL] else {
                     fatalError("ERROR: Unable to retrieve image url string")
@@ -172,7 +164,6 @@ class RedditHomeVC: UITableViewController {
             self.parsejsonData(jsonDict: json!)
             
             DispatchQueue.main.async {
-                self.isViewFirstLoaded = true
                 self.tableView.reloadData()
                 
                 if(self.shouldRestoreToPrevousState){
