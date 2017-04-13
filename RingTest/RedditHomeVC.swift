@@ -13,10 +13,9 @@ class RedditHomeVC: UITableViewController {
     
     // MARK: - Properties
     
-    let urlHomeTop = "https://api.reddit.com/top?limit=50"
     var postArr : [Dictionary<String, String>] = []
     var fullSizeImgForSelectedCell : String = ""
-    var shouldRestore : Bool = false
+    var shouldRestoreToPrevousState : Bool = false
     var isViewFirstLoaded : Bool = false
     var preloadedCellIndices : [IndexPath] = [IndexPath()]
     var lastTopVisibleIndexpath : IndexPath = IndexPath()
@@ -50,18 +49,18 @@ class RedditHomeVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: indexPath) as? TopTabHomeCell else{
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.HOME_TOP, for: indexPath) as? TopTabHomeCell else{
             fatalError("Unable to instantiate TopTabHomeCell")
         }
         
         cell.redditHomeDelegate = self
         
         let cellData : Dictionary<String, String> = self.postArr[indexPath.row]
-        cell.postTitle.text = cellData["title"]
-        cell.authorsScreenName.text = cellData["author"]
-        cell.entryDate.text = cellData["entryDate"]
-        cell.commentQty.text = cellData["comments"]
-        cell.fullSizeImageURL = cellData["fullsizeImageURL"]!
+        cell.postTitle.text = cellData[PostDictKey.TITLE]
+        cell.authorsScreenName.text = cellData[PostDictKey.AUTHOR]
+        cell.entryDate.text = cellData[PostDictKey.ENTRY_DATE]
+        cell.commentQty.text = cellData[PostDictKey.COMMENT_QTY]
+        cell.fullSizeImageURL = cellData[PostDictKey.FULLSIZE_IMG_URL]!
         
         if(self.isViewFirstLoaded){
             self.isViewFirstLoaded = false
@@ -71,7 +70,7 @@ class RedditHomeVC: UITableViewController {
         if indexPath.row < self.preloadedCellIndices.count {
             self.isViewFirstLoaded = false
             do {
-                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
+                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData[PostDictKey.THUMBNAIL]!)!))
                 DispatchQueue.main.async {
                     cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
                 }
@@ -92,12 +91,12 @@ class RedditHomeVC: UITableViewController {
         
         for idx in visibleIndexArray {
             let cellData : Dictionary<String, String> = self.postArr[idx.row]
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "topPostCell", for: idx) as? TopTabHomeCell else{
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.HOME_TOP, for: idx) as? TopTabHomeCell else{
                 fatalError("Unable to instantiate TopTabHomeCell")
             }
             
             do {
-                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
+                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData[PostDictKey.THUMBNAIL]!)!))
                 cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
             }
             catch{
@@ -114,20 +113,18 @@ class RedditHomeVC: UITableViewController {
     
     override func encodeRestorableState(with coder: NSCoder) {
         super.encodeRestorableState(with: coder)
-        coder.encode(self.tableView.indexPathsForVisibleRows?[0], forKey: "lastTopVisibleRow")
-        print(type(of: self), terminator: "")
-        print(#function)
+        coder.encode(self.tableView.indexPathsForVisibleRows?[0], forKey: AppState.PREVIOUS_TOP_VISIBLE_ROW)
+        print(type(of: self), terminator: ""); print(#function)
     }
     
     override func decodeRestorableState(with coder: NSCoder) {
         super.decodeRestorableState(with: coder)
-        guard let lastIdxPath = coder.decodeObject(forKey: "lastTopVisibleRow") as? IndexPath else {
+        guard let lastIdxPath = coder.decodeObject(forKey: AppState.PREVIOUS_TOP_VISIBLE_ROW) as? IndexPath else {
             return
         }
         self.lastTopVisibleIndexpath = lastIdxPath
-        self.shouldRestore = true
-        print(type(of: self), terminator: "")
-        print(#function)
+        self.shouldRestoreToPrevousState = true
+        print(type(of: self), terminator: ""); print(#function)
     }
     
     override func applicationFinishedRestoringState() {
@@ -150,7 +147,7 @@ class RedditHomeVC: UITableViewController {
     
     func segueToFullSizeImageScreen(imgURL : String) {
         self.fullSizeImgForSelectedCell = imgURL
-        self.performSegue(withIdentifier: "segueToFullSizeImage", sender: self)
+        self.performSegue(withIdentifier: Segue.TO_FULLSIZE_IMAGE_VC, sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -165,7 +162,7 @@ class RedditHomeVC: UITableViewController {
     // MARK: - Reddit API Calls
     
     func getRedditData() {
-        let url = URL(string: urlHomeTop)
+        let url = URL(string: RedditURL.HOME_TOP_50)
         
         let task = URLSession.shared.dataTask(with: url!) { data, response, error in
             guard error == nil else {
@@ -184,9 +181,9 @@ class RedditHomeVC: UITableViewController {
                 self.isViewFirstLoaded = true
                 self.tableView.reloadData()
                 
-                if(self.shouldRestore){
+                if(self.shouldRestoreToPrevousState){
                     self.tableView.scrollToRow(at: self.lastTopVisibleIndexpath, at: UITableViewScrollPosition.middle, animated: true)
-                    self.shouldRestore = false
+                    self.shouldRestoreToPrevousState = false
                 }
                 else {
                     self.tableView.setContentOffset(CGPoint.init(x: 0, y: -100), animated: true)
@@ -227,21 +224,36 @@ class RedditHomeVC: UITableViewController {
             
             var postDict : Dictionary<String, String> = [String : String]()
             
-            let title = data.value(forKey: "title") as! String
-            let author = data.value(forKey: "author") as! String
-            let comments = data.value(forKey: "num_comments") as! NSNumber
-            let utc = data.value(forKey: "created_utc") as! NSNumber
+            guard let title = data.value(forKey: "title") as? String else {
+                fatalError("ERROR: Unable to retrieve data[title]")
+            }
+            
+            guard let author = data.value(forKey: "author") as? String else {
+                fatalError("ERROR: Unable to retrieve data[author]")
+            }
+            
+            guard let comments = data.value(forKey: "num_comments") as? NSNumber else {
+                fatalError("ERROR: Unable to retrieve data[num_comments]")
+            }
+            
+            guard let utc = data.value(forKey: "created_utc") as? NSNumber else {
+                fatalError("ERROR: Unable to retrieve data[create_utc]")
+            }
+            
             let date = NSDate(timeIntervalSince1970: TimeInterval(utc))
             let elapsedHours = Int(NSDate().timeIntervalSince(date as Date) / 3600)
-            let thumbnailImageURL = data.value(forKey: "thumbnail") as! String
+            guard let thumbnailImageURL = data.value(forKey: "thumbnail") as? String else {
+                fatalError("ERROR: Unable to retrieve data[thumbnail]")
+            }
+            
             let fullsizeImageURL = self.fetchFullSizeImageURL(data: data)
             
-            postDict["title"] = title
-            postDict["author"] = "by " + author
-            postDict["comments"] = comments.stringValue + " comments"
-            postDict["entryDate"] = String(elapsedHours) + " hours ago"
-            postDict["thumbnailImageURL"] = thumbnailImageURL
-            postDict["fullsizeImageURL"] = fullsizeImageURL
+            postDict[PostDictKey.TITLE] = title
+            postDict[PostDictKey.AUTHOR] = "by " + author
+            postDict[PostDictKey.COMMENT_QTY] = comments.stringValue + " comments"
+            postDict[PostDictKey.ENTRY_DATE] = String(elapsedHours) + " hours ago"
+            postDict[PostDictKey.THUMBNAIL] = thumbnailImageURL
+            postDict[PostDictKey.FULLSIZE_IMG_URL] = fullsizeImageURL
 
             self.postArr.append(postDict)
         }

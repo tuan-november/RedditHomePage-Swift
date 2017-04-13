@@ -34,7 +34,11 @@ class FullSizeImageVC: UIViewController {
         print("Saving image...")
         
         do {
-            let image =  try UIImage(data: Data(contentsOf: URL(string: self.fullSizeImageURL)!))
+            guard let url = URL(string: self.fullSizeImageURL) else {
+                fatalError("ERROR: Unable to instantiate url from self.fullSizeImageURL")
+            }
+            
+            let image =  try UIImage(data: Data(contentsOf: url))
             UIImageWriteToSavedPhotosAlbum(image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
         }
         catch{
@@ -83,13 +87,13 @@ class FullSizeImageVC: UIViewController {
     
     override func encodeRestorableState(with coder: NSCoder) {
         super.encodeRestorableState(with: coder)
-        coder.encode(self.fullSizeImageURL, forKey: "imageURL")
+        coder.encode(self.fullSizeImageURL, forKey: AppState.IMAGE_URL)
         print(type(of: self), terminator: ""); print(#function)
     }
     
     override func decodeRestorableState(with coder: NSCoder) {
         super.decodeRestorableState(with: coder)
-        guard let imgURL = coder.decodeObject(forKey: "imageURL") as? String else {
+        guard let imgURL = coder.decodeObject(forKey: AppState.IMAGE_URL) as? String else {
             return
         }
         self.fullSizeImageURL = imgURL
