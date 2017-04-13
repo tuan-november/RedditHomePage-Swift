@@ -84,16 +84,17 @@ class FullSizeImageVC: UIViewController {
     override func encodeRestorableState(with coder: NSCoder) {
         super.encodeRestorableState(with: coder)
         coder.encode(self.fullSizeImageURL, forKey: "imageURL")
-        print(type(of: self), terminator: "")
-        print(#function)
+        print(type(of: self), terminator: ""); print(#function)
     }
     
     override func decodeRestorableState(with coder: NSCoder) {
         super.decodeRestorableState(with: coder)
-        self.fullSizeImageURL = coder.decodeObject(forKey: "imageURL") as! String
+        guard let imgURL = coder.decodeObject(forKey: "imageURL") as? String else {
+            return
+        }
+        self.fullSizeImageURL = imgURL
         self.loadImage()
-        print(type(of: self), terminator: "")
-        print(#function)
+        print(type(of: self), terminator: ""); print(#function)
     }
     
     override func applicationFinishedRestoringState() {

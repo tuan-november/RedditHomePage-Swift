@@ -17,6 +17,8 @@ class RedditHomeVC: UITableViewController {
     var postArr : [Dictionary<String, String>] = []
     var fullSizeImgForSelectedCell : String = ""
     var shouldRestore : Bool = false
+    var isViewFirstLoaded : Bool = false
+    var preloadedCellIndices : [IndexPath] = [IndexPath()]
     var lastTopVisibleIndexpath : IndexPath = IndexPath()
     
     override func viewDidLoad() {
@@ -61,8 +63,13 @@ class RedditHomeVC: UITableViewController {
         cell.commentQty.text = cellData["comments"]
         cell.fullSizeImageURL = cellData["fullsizeImageURL"]!
         
-        // Preload pictures of first 5 cells only, for pagination purpose
-        if(self.tableView.indexPathsForVisibleRows?.contains(indexPath))! && indexPath.row < 5 {
+        if(self.isViewFirstLoaded){
+            self.isViewFirstLoaded = false
+            self.preloadedCellIndices = self.tableView.indexPathsForVisibleRows!
+        }
+        
+        if indexPath.row < self.preloadedCellIndices.count {
+            self.isViewFirstLoaded = false
             do {
                 let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData["thumbnailImageURL"]!)!))
                 DispatchQueue.main.async {
@@ -79,7 +86,9 @@ class RedditHomeVC: UITableViewController {
     
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
-        let visibleIndexArray = self.tableView.indexPathsForVisibleRows!
+        guard let visibleIndexArray = self.tableView.indexPathsForVisibleRows else {
+            fatalError("Unable to detect visible cells")
+        }
         
         for idx in visibleIndexArray {
             let cellData : Dictionary<String, String> = self.postArr[idx.row]
@@ -112,7 +121,10 @@ class RedditHomeVC: UITableViewController {
     
     override func decodeRestorableState(with coder: NSCoder) {
         super.decodeRestorableState(with: coder)
-        self.lastTopVisibleIndexpath = coder.decodeObject(forKey: "lastTopVisibleRow") as! IndexPath
+        guard let lastIdxPath = coder.decodeObject(forKey: "lastTopVisibleRow") as? IndexPath else {
+            return
+        }
+        self.lastTopVisibleIndexpath = lastIdxPath
         self.shouldRestore = true
         print(type(of: self), terminator: "")
         print(#function)
@@ -169,6 +181,7 @@ class RedditHomeVC: UITableViewController {
             self.parsejsonData(jsonDict: json!)
             
             DispatchQueue.main.async {
+                self.isViewFirstLoaded = true
                 self.tableView.reloadData()
                 
                 if(self.shouldRestore){
