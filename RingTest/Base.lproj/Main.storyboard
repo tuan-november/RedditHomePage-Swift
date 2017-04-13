@@ -13,7 +13,7 @@
         <!--Reddit HomeVC-->
         <scene sceneID="h6f-mv-gWj">
             <objects>
-                <tableViewController id="5nI-NC-vhb" customClass="RedditHomeVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController restorationIdentifier="RedditHomeVC" storyboardIdentifier="RedditHomeVC" id="5nI-NC-vhb" customClass="RedditHomeVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="235" sectionHeaderHeight="28" sectionFooterHeight="28" id="XOA-2g-hcW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -121,7 +121,7 @@
         <!--Full Size ImageVC-->
         <scene sceneID="EKn-p7-DSv">
             <objects>
-                <viewController id="JBW-7n-eMT" customClass="FullSizeImageVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController restorationIdentifier="FullSizeImageVC" storyboardIdentifier="FullSizeImageVC" id="JBW-7n-eMT" customClass="FullSizeImageVC" customModule="RingTest" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="kwf-PC-I0J"/>
                         <viewControllerLayoutGuide type="bottom" id="yaD-qk-YTO"/>
@@ -166,7 +166,7 @@
         <!--Navigation Controller-->
         <scene sceneID="9iW-cr-kJY">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="e0T-u2-CCz" sceneMemberID="viewController">
+                <navigationController restorationIdentifier="MainNavigationController" storyboardIdentifier="MainNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="e0T-u2-CCz" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="2s1-G2-JSH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>

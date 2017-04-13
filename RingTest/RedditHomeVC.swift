@@ -16,6 +16,8 @@ class RedditHomeVC: UITableViewController {
     let urlHomeTop = "https://api.reddit.com/top?limit=50"
     var postArr : [Dictionary<String, String>] = []
     var fullSizeImgForSelectedCell : String = ""
+    var shouldRestore : Bool = false
+    var lastTopVisibleIndexpath : IndexPath = IndexPath()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,6 +101,27 @@ class RedditHomeVC: UITableViewController {
         }
     }
     
+    // MARK: - App State Restoration
+    
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        coder.encode(self.tableView.indexPathsForVisibleRows?[0], forKey: "lastTopVisibleRow")
+        print(type(of: self), terminator: "")
+        print(#function)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        super.decodeRestorableState(with: coder)
+        self.lastTopVisibleIndexpath = coder.decodeObject(forKey: "lastTopVisibleRow") as! IndexPath
+        self.shouldRestore = true
+        print(type(of: self), terminator: "")
+        print(#function)
+    }
+    
+    override func applicationFinishedRestoringState() {
+        print("... previous state successfully restored")
+    }
+    
     // MARK: - Navigation Bar
     
     func setupNavigationBar(){
@@ -144,6 +167,15 @@ class RedditHomeVC: UITableViewController {
             
             let json = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
             self.parsejsonData(jsonDict: json!)
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                
+                if(self.shouldRestore){
+                    self.tableView.scrollToRow(at: self.lastTopVisibleIndexpath, at: UITableViewScrollPosition.middle, animated: true)
+                    self.shouldRestore = false
+                }
+            }
         }
         
         task.resume()
@@ -196,10 +228,6 @@ class RedditHomeVC: UITableViewController {
             postDict["fullsizeImageURL"] = fullsizeImageURL
 
             self.postArr.append(postDict)
-        }
-        
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
         }
     }
     

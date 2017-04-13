@@ -79,6 +79,27 @@ class FullSizeImageVC: UIViewController {
         present(popupDialog, animated: true, completion: nil)
     }
 
+    // MARK: - App State Restoration
+    
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        coder.encode(self.fullSizeImageURL, forKey: "imageURL")
+        print(type(of: self), terminator: "")
+        print(#function)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        super.decodeRestorableState(with: coder)
+        self.fullSizeImageURL = coder.decodeObject(forKey: "imageURL") as! String
+        self.loadImage()
+        print(type(of: self), terminator: "")
+        print(#function)
+    }
+    
+    override func applicationFinishedRestoringState() {
+        print("... previous state successfully restored")
+    }
+
     /*
     // MARK: - Navigation
 
