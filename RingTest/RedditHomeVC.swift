@@ -83,6 +83,9 @@ class RedditHomeVC: UITableViewController {
                         cell.isImageLoaded = true
                     }
                 }
+                else {
+                    print("ERROR: URL validation failed")
+                }
             }
             catch {
                 print(error)
@@ -99,87 +102,7 @@ class RedditHomeVC: UITableViewController {
         }
         return UIApplication.shared.canOpenURL(url)
     }
-    
-//    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-////        self.loadImagesForVisibleCells()
-//        print("...end dragging")
-//        print("scrollView.decelerationRate: ", scrollView.decelerationRate)
-//    }
-
-//    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//        self.loadImagesForVisibleCells()
-////        print("... end decelerating")
-//    }
-    
-//    override func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
-//        print("... will decelerating")
-//    }
-    
-//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-////        self.loadImagesForVisibleCells()
-//        NSObject.cancelPreviousPerformRequests(withTarget: self)
-//    }
-    
-//    override func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-//        NSObject.cancelPreviousPerformRequests(withTarget: self)
-//        self.loadImagesForVisibleCells()
-//        print("end calling....")
-//    }
-    
-    func loadImagesForVisibleCells(){
-        guard let visibleIndexArray = self.tableView.indexPathsForVisibleRows else {
-            fatalError("Unable to detect visible cells")
-        }
         
-        for idx in visibleIndexArray {
-            let cellData : Dictionary<String, String> = self.postArr[idx.row]
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.HOME_TOP, for: idx) as? TopTabHomeCell else{
-                fatalError("Unable to instantiate TopTabHomeCell")
-            }
-            
-            do {
-                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData[PostDictKey.THUMBNAIL]!)!))
-                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
-            }
-            catch{
-                print(error)
-            }
-            
-        }
-        DispatchQueue.main.async {
-            self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: UITableViewRowAnimation.none)
-        }
-    }
-    
-    
-    func lazyLoadingCellImages(){
-        for (idx, post) in self.postArr.enumerated() {
-            let currentIndexPath : IndexPath = IndexPath(row: idx, section: 0)
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.HOME_TOP, for: currentIndexPath) as? TopTabHomeCell else{
-                fatalError("Unable to instantiate TopTabHomeCell")
-                continue
-            }
-            
-            do {
-                let imageURL = URL(string: post[PostDictKey.THUMBNAIL]!)
-                let thumbnailImage =  try UIImage(data: Data(contentsOf: imageURL!))
-                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
-                cell.isImageLoaded = true
-            }
-            catch{
-                print(error)
-            }
-            
-//            if(idx % qty == 0){
-                DispatchQueue.main.async {
-                    self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: UITableViewRowAnimation.none)
-                }
-//            }
-            
-        }
-        
-    }
-    
     // MARK: - App State Restoration
     
     override func encodeRestorableState(with coder: NSCoder) {
