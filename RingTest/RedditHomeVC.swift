@@ -188,6 +188,9 @@ class RedditHomeVC: UITableViewController {
                     self.tableView.scrollToRow(at: self.lastTopVisibleIndexpath, at: UITableViewScrollPosition.middle, animated: true)
                     self.shouldRestore = false
                 }
+                else {
+                    self.tableView.setContentOffset(CGPoint.init(x: 0, y: -100), animated: true)
+                }
             }
         }
         
