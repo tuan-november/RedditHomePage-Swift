@@ -67,12 +67,21 @@ class RedditHomeVC: UITableViewController {
             self.preloadedCellIndices = self.tableView.indexPathsForVisibleRows!
         }
         
-        if indexPath.row < self.preloadedCellIndices.count {
+        if !cell.isImageLoaded {
             self.isViewFirstLoaded = false
             do {
-                let thumbnailImage =  try UIImage(data: Data(contentsOf: URL(string: cellData[PostDictKey.THUMBNAIL]!)!))
-                DispatchQueue.main.async {
-                    cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+                guard let urlString : String = cellData[PostDictKey.THUMBNAIL] else {
+                    fatalError("ERROR: Unable to retrieve image url string")
+                }
+                if(self.validateURL(urlString: urlString)){
+                    guard let imageURL = URL(string: urlString) else {
+                        fatalError("Invalid url string")
+                    }
+                    let thumbnailImage =  try UIImage(data: Data(contentsOf: imageURL))
+                    DispatchQueue.main.async {
+                        cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+                        cell.isImageLoaded = true
+                    }
                 }
             }
             catch {
@@ -83,8 +92,41 @@ class RedditHomeVC: UITableViewController {
         return cell
     }
     
-    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        
+    func validateURL (urlString: String) -> Bool {
+        guard let url = URL(string: urlString) else{
+            print("ERROR: invalid url string")
+            return false
+        }
+        return UIApplication.shared.canOpenURL(url)
+    }
+    
+//    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+////        self.loadImagesForVisibleCells()
+//        print("...end dragging")
+//        print("scrollView.decelerationRate: ", scrollView.decelerationRate)
+//    }
+
+//    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+//        self.loadImagesForVisibleCells()
+////        print("... end decelerating")
+//    }
+    
+//    override func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+//        print("... will decelerating")
+//    }
+    
+//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+////        self.loadImagesForVisibleCells()
+//        NSObject.cancelPreviousPerformRequests(withTarget: self)
+//    }
+    
+//    override func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+//        NSObject.cancelPreviousPerformRequests(withTarget: self)
+//        self.loadImagesForVisibleCells()
+//        print("end calling....")
+//    }
+    
+    func loadImagesForVisibleCells(){
         guard let visibleIndexArray = self.tableView.indexPathsForVisibleRows else {
             fatalError("Unable to detect visible cells")
         }
@@ -107,6 +149,35 @@ class RedditHomeVC: UITableViewController {
         DispatchQueue.main.async {
             self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: UITableViewRowAnimation.none)
         }
+    }
+    
+    
+    func lazyLoadingCellImages(){
+        for (idx, post) in self.postArr.enumerated() {
+            let currentIndexPath : IndexPath = IndexPath(row: idx, section: 0)
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.HOME_TOP, for: currentIndexPath) as? TopTabHomeCell else{
+                fatalError("Unable to instantiate TopTabHomeCell")
+                continue
+            }
+            
+            do {
+                let imageURL = URL(string: post[PostDictKey.THUMBNAIL]!)
+                let thumbnailImage =  try UIImage(data: Data(contentsOf: imageURL!))
+                cell.authorsThumbnail.setImage(thumbnailImage, for: UIControlState.normal)
+                cell.isImageLoaded = true
+            }
+            catch{
+                print(error)
+            }
+            
+//            if(idx % qty == 0){
+                DispatchQueue.main.async {
+                    self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows!, with: UITableViewRowAnimation.none)
+                }
+//            }
+            
+        }
+        
     }
     
     // MARK: - App State Restoration

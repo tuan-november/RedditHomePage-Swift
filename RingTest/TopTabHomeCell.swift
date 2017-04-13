@@ -18,6 +18,7 @@ class TopTabHomeCell: UITableViewCell {
     
     var redditHomeDelegate : RedditHomeVC = RedditHomeVC()
     var fullSizeImageURL : String = ""
+    var isImageLoaded : Bool = false
     
     override func awakeFromNib() {
         super.awakeFromNib()
